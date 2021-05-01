@@ -1,0 +1,14 @@
+{
+  "name": "com.kalendra.commons",
+  "version": "0.0.1",
+  "displayName": "Kalendra.Commons",
+  "description": "Basics utilities & architecture any Kalendra project may be made with.",
+  "keywords": [
+    "architecture",
+    "tests",
+    "utils"
+  ],
+  "author": {
+    "name": "RGV"
+  }
+}
