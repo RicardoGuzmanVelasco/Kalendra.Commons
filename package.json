@@ -1,6 +1,6 @@
 {
   "name": "com.kalendra.commons",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "displayName": "Kalendra.Commons",
   "description": "Basics utilities & architecture any Kalendra project may be made with.",
   "dependencies": {
