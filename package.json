@@ -4,7 +4,7 @@
   "displayName": "Kalendra.Commons",
   "description": "Basics utilities & architecture any Kalendra project may be made with.",
   "dependencies": {
-    "com.boundfoxstudios.fluentassertions": "https://github.com/BoundfoxStudios/fluentassertions-unity.git"
+    "com.boundfoxstudios.fluentassertions": "https://github.com/BoundfoxStudios/fluentassertions-unity.git#upm"
   },
   "keywords": [
     "architecture",
