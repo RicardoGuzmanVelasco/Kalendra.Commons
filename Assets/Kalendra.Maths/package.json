@@ -1,0 +1,12 @@
+{
+  "name": "com.kalendra.maths",
+  "version": "0.0.1",
+  "displayName": "Kalendra.Maths",
+  "description": "Math utilities, abstractions & data structures any Kalendra project may be made with.",
+  "keywords": [
+    "utils"
+  ],
+  "author": {
+    "name": "RGV"
+  }
+}
