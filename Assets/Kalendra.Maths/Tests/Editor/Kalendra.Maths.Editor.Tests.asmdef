@@ -3,7 +3,9 @@
     "rootNamespace": "Kalendra.Maths.Editor.Tests",
     "references": [
         "UnityEngine.TestRunner",
-        "UnityEditor.TestRunner"
+        "UnityEditor.TestRunner",
+        "BoundfoxStudios.FluentAssertions",
+        "Kalendra.Maths"
     ],
     "includePlatforms": [
         "Editor"
