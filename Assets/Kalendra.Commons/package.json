@@ -3,9 +3,7 @@
   "version": "0.0.2",
   "displayName": "Kalendra.Commons",
   "description": "Basics utilities & architecture any Kalendra project may be made with.",
-  "dependencies": {
-    "com.boundfoxstudios.fluentassertions": "5.10.3-r5"
-  },
+  "dependencies": { },
   "keywords": [
     "architecture",
     "tests",
