@@ -6,8 +6,11 @@ namespace Kalendra.Commons.Editor
 {
     public class AsmdefBuilder
     {
-        string name;
-        string rootNamespace;
+        string name = "";
+        /// <summary>
+        /// If null, same as <see cref="name"/>.
+        /// </summary>
+        string rootNamespace = "";
         
         bool isEditor;
         bool isTests;
@@ -27,6 +30,11 @@ namespace Kalendra.Commons.Editor
         public AsmdefBuilder WithRootNamespace(string rootNamespace)
         {
             this.rootNamespace = rootNamespace;
+            return this;
+        }
+        public AsmdefBuilder WithRootNamespaceSameThanName()
+        {
+            rootNamespace = null;
             return this;
         }
         
@@ -88,7 +96,7 @@ namespace Kalendra.Commons.Editor
             builder.AppendLine("{");
 
             builder.AppendLine(Pair(nameof(name), name) + ",");
-            builder.AppendLine(Pair(nameof(rootNamespace), rootNamespace) + ",");
+            builder.AppendLine(Pair(nameof(rootNamespace), rootNamespace ?? name) + ",");
 
             if(isEditor || isTests)
             {

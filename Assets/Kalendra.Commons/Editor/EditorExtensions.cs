@@ -6,6 +6,7 @@ namespace Kalendra.Commons.Editor
 {
     public static class EditorExtensions
     {
+        public static string FilenameFromPath(this string path) => path.Split('/').Last();
         public static string ConcatPath(this string path, string newPath) => $"{path}/{newPath}";
         public static bool IsFolder(this string path) => AssetDatabase.IsValidFolder(path);
 

@@ -38,19 +38,23 @@ namespace Kalendra.Commons.Editor
                 Directory.Delete(folderPath, true);
             Directory.CreateDirectory(folderPath);
 
-            Debug.Log($"Cleaned package layout from root {folderPath}");
+            Debug.LogWarning($"Cleaned package layout from root {folderPath}");
             Recompile();
         }
 
         static void CreatePackageLayoutInFolder(string folderPath)
         {
+            //TODO: to policy.
             folderPath.AssertMeetsBasePackageLayout();
 
+            //TODO: to policy.
             folderPath.CreateFolderWithAssembly("Runtime/Domain");
             folderPath.CreateFolderWithAssembly("Runtime/Infrastructure");
 
+            //TODO: to policy.
             folderPath.CreateFolderWithAssembly("Tests/Editor");
             folderPath.CreateFolderWithAssembly("Tests/Runtime");
+            folderPath.CreateFolderWithAssembly("Tests/Builders");
 
             Debug.Log($"Created package layout from root {folderPath}");
             Recompile();
@@ -62,22 +66,38 @@ namespace Kalendra.Commons.Editor
             path.CreateSubfolder(folder);
             var assemblyFolderPath = path.ConcatPath(folder);
 
-            var assemblyName = folder.Replace("/", ".");
+            var assemblyName = $"{path.FilenameFromPath()}.{folder.Replace("/", ".")}";
             CreateAsmdef(assemblyName, assemblyFolderPath);
         }
 
         static void CreateAsmdef(string asmdefName, string asmdefPath)
         {
-            var isEditorAssembly = asmdefName.Contains("Editor") || asmdefPath.Contains("Editor");
-            var isTestAssembly = asmdefName.Contains("Tests") || asmdefPath.Contains("Tests");
+            asmdefName = asmdefName.IgnoreLayers("Runtime"); //TODO: to policy.
+            
+            var isEditorAssembly = asmdefName.Contains("Editor"); //TODO: to policy.
+            var isTestAssembly = asmdefName.Contains("Tests"); //TODO: to policy.
             
             var asmdefContent = Build
                                 .Asmdef()
                                 .WithName(asmdefName)
+                                .WithRootNamespaceSameThanName()
                                 .IsEditor(isEditorAssembly)
                                 .IsTests(isTestAssembly);
             
             File.WriteAllText($"{asmdefPath}/{asmdefName}.asmdef", asmdefContent);
+        }
+
+        static string IgnoreLayers(this string path, params string[] layersToIgnore)
+        {
+            foreach(var layer in layersToIgnore)
+                path = path.Replace(layer, "");
+
+            while(path.Contains(".."))
+                path = path.Replace("..", ".");
+
+            path = path.Trim('.');
+            
+            return path;
         }
         #endregion
 
