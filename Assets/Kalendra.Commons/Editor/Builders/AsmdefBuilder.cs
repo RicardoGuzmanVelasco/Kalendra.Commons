@@ -1,4 +1,4 @@
-using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
@@ -6,78 +6,76 @@ namespace Kalendra.Commons.Editor
 {
     public class AsmdefBuilder
     {
-        string name = "";
-        /// <summary>
-        /// If null, same as <see cref="name"/>.
-        /// </summary>
-        string rootNamespace = "";
-        
-        bool isEditor;
-        bool isTests;
-
-        bool allowUnsafeCode;
-        bool overrideReferences;
-        bool autoReferenced = true;
-        bool noEngineReferences;
+        readonly AsmdefDefinition asmdef;
 
         #region Fluent API
         public AsmdefBuilder WithName(string name)
         {
-            this.name = name;
+            asmdef.name = name;
             return this;
         }
-        
+
         public AsmdefBuilder WithRootNamespace(string rootNamespace)
         {
-            this.rootNamespace = rootNamespace;
+            asmdef.rootNamespace = rootNamespace;
             return this;
         }
+
         public AsmdefBuilder WithRootNamespaceSameThanName()
         {
-            rootNamespace = null;
+            asmdef.rootNamespace = null;
             return this;
         }
-        
+
         //TODO: might use a platforms string array.
         public AsmdefBuilder IsEditor(bool isEditor)
         {
-            this.isEditor = isEditor;
+            asmdef.isEditor = isEditor;
             return this;
         }
 
         public AsmdefBuilder IsTests(bool isTests)
         {
-            this.isTests = isTests;
+            asmdef.isTests = isTests;
+            return this;
+        }
+
+        public AsmdefBuilder WithReferences(params string[] references)
+        {
+            asmdef.references = references.ToList();
             return this;
         }
 
         public AsmdefBuilder WithUnsafeCode(bool allowUnsafeCode)
         {
-            this.allowUnsafeCode = allowUnsafeCode;
+            asmdef.allowUnsafeCode = allowUnsafeCode;
             return this;
         }
 
         public AsmdefBuilder WithOverrideReferences(bool overrideReferences)
         {
-            this.overrideReferences = overrideReferences;
+            asmdef.overrideReferences = overrideReferences;
             return this;
         }
 
         public AsmdefBuilder WithAutoReferenced(bool autoReferenced)
         {
-            this.autoReferenced = autoReferenced;
+            asmdef.autoReferenced = autoReferenced;
             return this;
         }
 
         public AsmdefBuilder WithEngineReferences(bool includeEngineReferences)
         {
-            noEngineReferences = !includeEngineReferences;
+            asmdef.noEngineReferences = !includeEngineReferences;
             return this;
         }
         #endregion
 
         #region ObjectMother/FactoryMethods
-        AsmdefBuilder() { }
+        AsmdefBuilder()
+        {
+            asmdef = new AsmdefDefinition();
+        }
 
         public static AsmdefBuilder New() => new AsmdefBuilder();
         #endregion
@@ -90,25 +88,52 @@ namespace Kalendra.Commons.Editor
         #endregion
 
         #region Support methods
+        //TODO: it's a whole class!
         string BuildAsmdefContent()
         {
             var builder = new StringBuilder();
             builder.AppendLine("{");
 
-            builder.AppendLine(Pair(nameof(name), name) + ",");
-            builder.AppendLine(Pair(nameof(rootNamespace), rootNamespace ?? name) + ",");
+            builder.AppendLine(Pair(nameof(asmdef.name), asmdef.name) + ",");
+            builder.AppendLine(Pair(nameof(asmdef.rootNamespace), asmdef.rootNamespace ?? asmdef.name) + ",");
 
-            if(isEditor || isTests)
+            if(asmdef.isTests && !asmdef.name.Contains("Builders"))
+                asmdef.references.AddRange(new[]
+                {
+                    "UnityEngine.TestRunner",
+                    "UnityEditor.TestRunner",
+                    "BoundfoxStudios.FluentAssertions"
+                });
+            builder.AppendLine(PairArray(nameof(asmdef.references), asmdef.references) + ",");
+
+            if(asmdef.isEditor || asmdef.isTests)
             {
                 builder.AppendLine(PairArray("includePlatforms", "Editor") + ",");
                 builder.AppendLine(PairArray("excludePlatforms") + ",");
             }
             
-            builder.AppendLine(Pair(nameof(allowUnsafeCode), allowUnsafeCode) + ",");
-            builder.AppendLine(Pair(nameof(overrideReferences), overrideReferences) + ",");
-            builder.AppendLine(Pair(nameof(autoReferenced), autoReferenced) + ",");
-            builder.AppendLine(Pair(nameof(noEngineReferences), noEngineReferences));
-            
+            builder.AppendLine(Pair(nameof(asmdef.allowUnsafeCode), asmdef.allowUnsafeCode) + ",");
+
+            if(asmdef.isTests && !asmdef.name.Contains("Builders"))
+            {
+                asmdef.overrideReferences = true;
+                asmdef.precompiledReferences.Add("nunit.framework.dll");
+            }
+
+            builder.AppendLine(Pair(nameof(asmdef.overrideReferences), asmdef.overrideReferences) + ",");
+            builder.AppendLine(PairArray(nameof(asmdef.precompiledReferences), asmdef.precompiledReferences) + ",");
+
+            if(asmdef.isTests)
+            {
+                asmdef.autoReferenced = false;
+                asmdef.defineConstraints.Add("UNITY_INCLUDE_TESTS");
+            }
+            builder.AppendLine(Pair(nameof(asmdef.autoReferenced), asmdef.autoReferenced) + ",");
+            builder.AppendLine(PairArray(nameof(asmdef.defineConstraints), asmdef.defineConstraints) + ",");
+
+            builder.AppendLine(PairArray(nameof(asmdef.versionDefines), asmdef.versionDefines) + ",");
+            builder.AppendLine(Pair(nameof(asmdef.noEngineReferences), asmdef.noEngineReferences));
+
             builder.AppendLine("}");
             return builder.ToString();
         }
@@ -117,10 +142,12 @@ namespace Kalendra.Commons.Editor
         static string Pair(string key, object value) => Pair(key, value.ToString());
         static string Pair(string key, string value) => $"\"{key}\": \"{value}\"";
 
+        static string PairArray(string key, IEnumerable<string> values) => PairArray(key, values.ToArray());
+
         static string PairArray(string key, params string[] values)
         {
             var valuesArray = "[";
-            
+
             foreach(var value in values)
                 valuesArray += "\"" + value + "\",";
 
