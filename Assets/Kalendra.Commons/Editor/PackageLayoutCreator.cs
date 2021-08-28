@@ -8,36 +8,51 @@ namespace Kalendra.Commons.Editor
 {
     public static class PackageLayoutCreator
     {
+        #region Editor/Inspector
         const string OrganizationName = "Kalendra";
-        const string hotkeyCreate = "%#&a";
-        const string hotkeyClean = "%#&q";
+        
+        const string HotkeyCreate = "%#&a";
+        const string HotkeyClean = "%#&q";
 
-        [MenuItem("Assets/Create/" + OrganizationName + "/Clean package Layout " + hotkeyClean)]
+        [MenuItem("Assets/Create/" + OrganizationName + "/Clean package Layout " + HotkeyClean)]
         public static void Clean()
         {
             var currentFolderPath = FindCurrentFolderFromProjectWindow();
-            currentFolderPath.AssertMeetsBasePackageLayout();
             
-            if(Directory.Exists(currentFolderPath))
-                Directory.Delete(currentFolderPath, true);
-            Directory.CreateDirectory(currentFolderPath);
-            
-            Recompile();
+            CleanPackageLayoutInFolder(currentFolderPath);
         }
-        
-        [MenuItem("Assets/Create/" + OrganizationName + "/Package Layout " + hotkeyCreate)]
+
+        [MenuItem("Assets/Create/" + OrganizationName + "/Package Layout " + HotkeyCreate)]
         public static void Create()
         {
             var currentFolderPath = FindCurrentFolderFromProjectWindow();
-            currentFolderPath.AssertMeetsBasePackageLayout();
+            CleanPackageLayoutInFolder(currentFolderPath);
+            
+            CreatePackageLayoutInFolder(currentFolderPath);
+        }
+        #endregion
+        
+        static void CleanPackageLayoutInFolder(string folderPath)
+        {
+            if(Directory.Exists(folderPath))
+                Directory.Delete(folderPath, true);
+            Directory.CreateDirectory(folderPath);
 
-            currentFolderPath.CreateFolderWithAssembly("Runtime/Domain");
-            currentFolderPath.CreateFolderWithAssembly("Runtime/Infrastructure");
-            
-            currentFolderPath.CreateFolderWithAssembly("Tests/Editor");
-            currentFolderPath.CreateFolderWithAssembly("Tests/Runtime");
-            
-            Debug.Log($"Created package layout from root {currentFolderPath}");
+            Debug.Log($"Cleaned package layout from root {folderPath}");
+            Recompile();
+        }
+
+        static void CreatePackageLayoutInFolder(string folderPath)
+        {
+            folderPath.AssertMeetsBasePackageLayout();
+
+            folderPath.CreateFolderWithAssembly("Runtime/Domain");
+            folderPath.CreateFolderWithAssembly("Runtime/Infrastructure");
+
+            folderPath.CreateFolderWithAssembly("Tests/Editor");
+            folderPath.CreateFolderWithAssembly("Tests/Runtime");
+
+            Debug.Log($"Created package layout from root {folderPath}");
             Recompile();
         }
 
@@ -48,15 +63,19 @@ namespace Kalendra.Commons.Editor
             var assemblyFolderPath = path.ConcatPath(folder);
 
             var assemblyName = folder.Replace("/", ".");
-            
             CreateAsmdef(assemblyName, assemblyFolderPath);
         }
 
         static void CreateAsmdef(string asmdefName, string asmdefPath)
         {
-            var isEditor = asmdefName.Contains("Editor") || asmdefPath.Contains("Editor");
+            var isEditorAssembly = asmdefName.Contains("Editor") || asmdefPath.Contains("Editor");
+            var isTestAssembly = asmdefName.Contains("Tests") || asmdefPath.Contains("Tests");
             
-            var asmdefContent = Build.Asmdef().WithName(asmdefName).IsEditor(isEditor);
+            var asmdefContent = Build
+                                .Asmdef()
+                                .WithName(asmdefName)
+                                .IsEditor(isEditorAssembly)
+                                .IsTests(isTestAssembly);
             
             File.WriteAllText($"{asmdefPath}/{asmdefName}.asmdef", asmdefContent);
         }

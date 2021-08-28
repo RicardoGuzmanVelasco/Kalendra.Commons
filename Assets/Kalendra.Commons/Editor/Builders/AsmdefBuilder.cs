@@ -10,6 +10,7 @@ namespace Kalendra.Commons.Editor
         string rootNamespace;
         
         bool isEditor;
+        bool isTests;
 
         bool allowUnsafeCode;
         bool overrideReferences;
@@ -33,6 +34,12 @@ namespace Kalendra.Commons.Editor
         public AsmdefBuilder IsEditor(bool isEditor)
         {
             this.isEditor = isEditor;
+            return this;
+        }
+
+        public AsmdefBuilder IsTests(bool isTests)
+        {
+            this.isTests = isTests;
             return this;
         }
 
@@ -83,7 +90,7 @@ namespace Kalendra.Commons.Editor
             builder.AppendLine(Pair(nameof(name), name) + ",");
             builder.AppendLine(Pair(nameof(rootNamespace), rootNamespace) + ",");
 
-            if(isEditor)
+            if(isEditor || isTests)
             {
                 builder.AppendLine(PairArray("includePlatforms", "Editor") + ",");
                 builder.AppendLine(PairArray("excludePlatforms") + ",");
@@ -114,7 +121,7 @@ namespace Kalendra.Commons.Editor
 
             valuesArray += "]";
 
-            return $"\"{key}\":{valuesArray}";
+            return $"\"{key}\": {valuesArray}";
         }
         #endregion
     }
