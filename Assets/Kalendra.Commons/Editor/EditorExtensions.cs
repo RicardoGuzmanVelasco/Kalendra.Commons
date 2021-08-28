@@ -6,6 +6,7 @@ namespace Kalendra.Commons.Editor
 {
     public static class EditorExtensions
     {
+        public static string ConcatPath(this string path, string newPath) => $"{path}/{newPath}";
         public static bool IsFolder(this string path) => AssetDatabase.IsValidFolder(path);
 
         public static bool HasFolder(this string path, string subfolderPath)
@@ -16,7 +17,7 @@ namespace Kalendra.Commons.Editor
             if(string.IsNullOrWhiteSpace(subfolderPath))
                 throw new ArgumentException("Empty subfolder path");
             
-            return AssetDatabase.IsValidFolder($"{path}/{subfolderPath}");
+            return AssetDatabase.IsValidFolder(path.ConcatPath(subfolderPath));
         }
 
         public static void CreateSubfolder(this string parentPath, string newFolderName)
@@ -32,7 +33,7 @@ namespace Kalendra.Commons.Editor
                 parentPath.CreateSubfolder(subfolder);
             
             if(newFolderPath.Length > 1)
-                parentPath = subFoldersNames.Aggregate(parentPath, (current, subfolder) => current + "/" + subfolder);
+                parentPath = subFoldersNames.Aggregate(parentPath, (p, s) => p.ConcatPath(s));
 
             var createdFolderGuid = AssetDatabase.CreateFolder(parentPath, newFolderName);
             if(string.IsNullOrEmpty(createdFolderGuid))

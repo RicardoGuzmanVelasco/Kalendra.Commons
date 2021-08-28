@@ -1,9 +1,9 @@
 {
-    "name": "Kalendra.Commons.Infraestructure",
+    "name": "Kalendra.Commons.Infrastructure",
+    "rootNamespace": "",
     "references": [
-        "GUID:dd71efc06e808dd4f96fc733e2faea61",
-        "GUID:e3805d9f9732fbe48b5da713c659bf03",
-        "GUID:0363c39af0dc2f442b1cb16b3f39a106"
+        "Kalendra.Commons.Architecture",
+        "Kalendra.Commons.Domain"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

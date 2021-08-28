@@ -1,6 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
@@ -10,28 +9,58 @@ namespace Kalendra.Commons.Editor
     public static class PackageLayoutCreator
     {
         const string OrganizationName = "Kalendra";
-        const string Hotkey = "%#&a";
+        const string hotkeyCreate = "%#&a";
+        const string hotkeyClean = "%#&q";
+
+        [MenuItem("Assets/Create/" + OrganizationName + "/Clean package Layout " + hotkeyClean)]
+        public static void Clean()
+        {
+            var currentFolderPath = FindCurrentFolderFromProjectWindow();
+            currentFolderPath.AssertMeetsBasePackageLayout();
+            
+            if(Directory.Exists(currentFolderPath))
+                Directory.Delete(currentFolderPath, true);
+            Directory.CreateDirectory(currentFolderPath);
+            
+            Recompile();
+        }
         
-        [MenuItem("Assets/Create/" + OrganizationName + "/Package Layout " + Hotkey)]
+        [MenuItem("Assets/Create/" + OrganizationName + "/Package Layout " + hotkeyCreate)]
         public static void Create()
         {
             var currentFolderPath = FindCurrentFolderFromProjectWindow();
-            AssertIfCurrentFolderMeetsBasePackageLayout(currentFolderPath);
+            currentFolderPath.AssertMeetsBasePackageLayout();
 
-            currentFolderPath.CreateSubfolder("Runtime/Domain");
-            currentFolderPath.CreateSubfolder("Runtime/Infrastructure");
+            currentFolderPath.CreateFolderWithAssembly("Runtime/Domain");
+            currentFolderPath.CreateFolderWithAssembly("Runtime/Infrastructure");
             
-            currentFolderPath.CreateSubfolder("Tests/Editor");
-            currentFolderPath.CreateSubfolder("Tests/Runtime");
+            currentFolderPath.CreateFolderWithAssembly("Tests/Editor");
+            currentFolderPath.CreateFolderWithAssembly("Tests/Runtime");
             
             Debug.Log($"Created package layout from root {currentFolderPath}");
+            Recompile();
         }
 
-        static void AssertIfCurrentFolderMeetsBasePackageLayout(string path)
+        #region Fake extensions
+        static void CreateFolderWithAssembly(this string path, string folder)
         {
-            if(string.IsNullOrWhiteSpace(path))
-                throw new InvalidOperationException("No folder selected?");
+            path.CreateSubfolder(folder);
+            var assemblyFolderPath = path.ConcatPath(folder);
+
+            var assemblyName = folder.Replace("/", ".");
+            
+            CreateAsmdef(assemblyName, assemblyFolderPath);
         }
+
+        static void CreateAsmdef(string asmdefName, string asmdefPath)
+        {
+            var isEditor = asmdefName.Contains("Editor") || asmdefPath.Contains("Editor");
+            
+            var asmdefContent = Build.Asmdef().WithName(asmdefName).IsEditor(isEditor);
+            
+            File.WriteAllText($"{asmdefPath}/{asmdefName}.asmdef", asmdefContent);
+        }
+        #endregion
 
         #region Support methods
         /// <remarks>
@@ -50,6 +79,14 @@ namespace Kalendra.Commons.Editor
 
             return currentActiveObject;
         }
+        
+        static void AssertMeetsBasePackageLayout(this string path)
+        {
+            if(string.IsNullOrWhiteSpace(path))
+                throw new InvalidOperationException("No folder selected?");
+        }
+
+        static void Recompile() => AssetDatabase.Refresh();
         #endregion
     }
 }
