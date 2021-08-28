@@ -4,6 +4,19 @@ using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
+/* TO-DO LIST
+ * ==========
+ * [ ] Asmdef class to split AsmdefDefinition and serialization structure
+ *     [ ] Then, AsmdefDefinition has responsibilities
+ * [ ] Serialization asmdef with Newtonsoft
+ *     [ ] Dependencies in asmdef
+ *     [ ] AsmdefBuilder created here instead of just folder names
+ * [ ] Window utility with architecture layers and dependencies
+ * [ ] Fake/Build empty classes on Builders folder
+ *     [?] Comment to explain a basic way of use
+ *         [ ] Reference to Kalendra.Commons.Tests.Builders stuff
+ */
+
 namespace Kalendra.Commons.Editor
 {
     public static class PackageLayoutCreator
@@ -47,6 +60,9 @@ namespace Kalendra.Commons.Editor
             //TODO: to policy.
             folderPath.AssertMeetsBasePackageLayout();
 
+            //TODO: to policy.
+            folderPath.CreateFolderWithAssembly("Editor");
+            
             //TODO: to policy.
             folderPath.CreateFolderWithAssembly("Runtime/Domain");
             folderPath.CreateFolderWithAssembly("Runtime/Infrastructure");
