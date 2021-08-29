@@ -1,72 +1,90 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace Kalendra.Commons.Editor
 {
     public class AsmdefBuilder
     {
-        readonly AsmdefDefinition asmdef;
+        readonly Asmdef asmdef;
 
         #region Fluent API
         public AsmdefBuilder WithName(string name)
         {
-            asmdef.name = name;
+            asmdef.Name = name;
             return this;
         }
 
         public AsmdefBuilder WithRootNamespace(string rootNamespace)
         {
-            asmdef.rootNamespace = rootNamespace;
+            asmdef.RootNamespace = rootNamespace;
             return this;
         }
 
         public AsmdefBuilder WithRootNamespaceSameThanName()
         {
-            asmdef.rootNamespace = null;
+            asmdef.RootNamespace = null;
             return this;
         }
 
-        //TODO: might use a platforms string array.
         public AsmdefBuilder IsEditor(bool isEditor)
         {
-            asmdef.isEditor = isEditor;
+            asmdef.IsEditor = isEditor;
             return this;
         }
 
         public AsmdefBuilder IsTests(bool isTests)
         {
-            asmdef.isTests = isTests;
+            asmdef.IsTests = isTests;
             return this;
         }
 
+        public AsmdefBuilder IsBuilders(bool isBuilders)
+        {
+            asmdef.IsBuilders = isBuilders;
+            return this;
+        }
+
+        public AsmdefBuilder WithIncludedPlatforms(params string[] includedPlatforms)
+        {
+            asmdef.IncludedPlatforms = includedPlatforms.ToList();
+            return this;
+        }
+
+        public AsmdefBuilder WithExcludedPlatforms(params string[] excludedPlatforms)
+        {
+            asmdef.ExcludedPlatforms = excludedPlatforms.ToList();
+            return this;
+        }
+        
         public AsmdefBuilder WithReferences(params string[] references)
         {
-            asmdef.references = references.ToList();
+            asmdef.References = references.ToList();
             return this;
         }
 
         public AsmdefBuilder WithUnsafeCode(bool allowUnsafeCode)
         {
-            asmdef.allowUnsafeCode = allowUnsafeCode;
+            asmdef.AllowUnsafeCode = allowUnsafeCode;
             return this;
         }
 
         public AsmdefBuilder WithOverrideReferences(bool overrideReferences)
         {
-            asmdef.overrideReferences = overrideReferences;
+            asmdef.OverrideReferences = overrideReferences;
             return this;
         }
 
         public AsmdefBuilder WithAutoReferenced(bool autoReferenced)
         {
-            asmdef.autoReferenced = autoReferenced;
+            asmdef.AutoReferenced = autoReferenced;
             return this;
         }
 
         public AsmdefBuilder WithEngineReferences(bool includeEngineReferences)
         {
-            asmdef.noEngineReferences = !includeEngineReferences;
+            asmdef.NoEngineReferences = !includeEngineReferences;
             return this;
         }
         #endregion
@@ -74,16 +92,17 @@ namespace Kalendra.Commons.Editor
         #region ObjectMother/FactoryMethods
         AsmdefBuilder()
         {
-            asmdef = new AsmdefDefinition();
+            asmdef = new Asmdef();
         }
 
         public static AsmdefBuilder New() => new AsmdefBuilder();
         #endregion
 
         #region Builder implementation
-        //TODO: use embbeded Newtonsoft to autoserialize a defined Asmdef object.
-        public string Build() => BuildAsmdefContent();
+        public Asmdef Build() => asmdef;
 
+        public static implicit operator Asmdef(AsmdefBuilder builder) => builder.Build();
+        public static implicit operator AsmdefDeserialization(AsmdefBuilder builder) => builder.Build();
         public static implicit operator string(AsmdefBuilder builder) => builder.Build();
         #endregion
 
@@ -92,49 +111,50 @@ namespace Kalendra.Commons.Editor
         string BuildAsmdefContent()
         {
             var builder = new StringBuilder();
-            builder.AppendLine("{");
+            // builder.AppendLine("{");
+            //
+            // builder.AppendLine(Pair(nameof(asmdef.Name), asmdef.Name) + ",");
+            // builder.AppendLine(Pair(nameof(asmdef.RootNamespace), asmdef.RootNamespace ?? asmdef.Name) + ",");
 
-            builder.AppendLine(Pair(nameof(asmdef.name), asmdef.name) + ",");
-            builder.AppendLine(Pair(nameof(asmdef.rootNamespace), asmdef.rootNamespace ?? asmdef.name) + ",");
-
-            if(asmdef.isTests && !asmdef.name.Contains("Builders"))
-                asmdef.references.AddRange(new[]
+            if(asmdef.IsTests && !asmdef.Name.Contains("Builders"))
+                asmdef.References.AddRange(new[]
                 {
                     "UnityEngine.TestRunner",
                     "UnityEditor.TestRunner",
                     "BoundfoxStudios.FluentAssertions"
                 });
-            builder.AppendLine(PairArray(nameof(asmdef.references), asmdef.references) + ",");
+            builder.AppendLine(PairArray(nameof(asmdef.References), asmdef.References) + ",");
 
-            if(asmdef.isEditor || asmdef.isTests)
-            {
-                builder.AppendLine(PairArray("includePlatforms", "Editor") + ",");
-                builder.AppendLine(PairArray("excludePlatforms") + ",");
-            }
+            // if(asmdef.IsEditor || asmdef.IsTests)
+            // {
+            //     builder.AppendLine(PairArray("includePlatforms", "Editor") + ",");
+            //     builder.AppendLine(PairArray("excludePlatforms") + ",");
+            // }
             
-            builder.AppendLine(Pair(nameof(asmdef.allowUnsafeCode), asmdef.allowUnsafeCode) + ",");
+            // builder.AppendLine(Pair(nameof(asmdef.AllowUnsafeCode), asmdef.AllowUnsafeCode) + ",");
 
-            if(asmdef.isTests && !asmdef.name.Contains("Builders"))
+            if(asmdef.IsTests && !asmdef.Name.Contains("Builders"))
             {
-                asmdef.overrideReferences = true;
-                asmdef.precompiledReferences.Add("nunit.framework.dll");
+                asmdef.OverrideReferences = true;
+                asmdef.PrecompiledReferences.Add("nunit.framework.dll");
             }
 
-            builder.AppendLine(Pair(nameof(asmdef.overrideReferences), asmdef.overrideReferences) + ",");
-            builder.AppendLine(PairArray(nameof(asmdef.precompiledReferences), asmdef.precompiledReferences) + ",");
+            // builder.AppendLine(Pair(nameof(asmdef.OverrideReferences), asmdef.OverrideReferences) + ",");
+            // builder.AppendLine(PairArray(nameof(asmdef.PrecompiledReferences), asmdef.PrecompiledReferences) + ",");
 
-            if(asmdef.isTests)
+            if(asmdef.IsTests)
             {
-                asmdef.autoReferenced = false;
-                asmdef.defineConstraints.Add("UNITY_INCLUDE_TESTS");
+                asmdef.AutoReferenced = false;
+                asmdef.DefineConstraints.Add("UNITY_INCLUDE_TESTS");
             }
-            builder.AppendLine(Pair(nameof(asmdef.autoReferenced), asmdef.autoReferenced) + ",");
-            builder.AppendLine(PairArray(nameof(asmdef.defineConstraints), asmdef.defineConstraints) + ",");
+            // builder.AppendLine(Pair(nameof(asmdef.AutoReferenced), asmdef.AutoReferenced) + ",");
+            // builder.AppendLine(PairArray(nameof(asmdef.DefineConstraints), asmdef.DefineConstraints) + ",");
 
-            builder.AppendLine(PairArray(nameof(asmdef.versionDefines), asmdef.versionDefines) + ",");
-            builder.AppendLine(Pair(nameof(asmdef.noEngineReferences), asmdef.noEngineReferences));
+            // builder.AppendLine(PairArray(nameof(asmdef.VersionDefines), asmdef.VersionDefines) + ",");
+            // builder.AppendLine(Pair(nameof(asmdef.NoEngineReferences), asmdef.NoEngineReferences));
 
-            builder.AppendLine("}");
+            // builder.AppendLine("}");
+
             return builder.ToString();
         }
 

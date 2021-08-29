@@ -2,19 +2,15 @@ using System.Collections.Generic;
 
 namespace Kalendra.Commons.Editor
 {
-    public class AsmdefDefinition
+    public class AsmdefDeserialization
     {
         public string name = "";
-
-        /// <summary>
-        /// If null, same as <see cref="name"/>.
-        /// </summary>
         public string rootNamespace = "";
- 
-        public bool isEditor;
-        public bool isTests;
         
         public List<string> references = new List<string>();
+        
+        public List<string> includePlatforms = new List<string>();
+        public List<string> excludePlatforms = new List<string>();
         
         public bool allowUnsafeCode;
         

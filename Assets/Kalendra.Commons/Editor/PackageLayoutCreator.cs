@@ -6,15 +6,16 @@ using UnityEngine;
 
 /* TO-DO LIST
  * ==========
- * [ ] Asmdef class to split AsmdefDefinition and serialization structure
- *     [ ] Then, AsmdefDefinition has responsibilities
- * [ ] Serialization asmdef with Newtonsoft
+ * [x] Asmdef class to split AsmdefDefinition and serialization structure
+ *     [-] Then, AsmdefDefinition has responsibilities
+ * [x] Serialization asmdef with Newtonsoft
  *     [ ] Dependencies in asmdef
  *     [ ] AsmdefBuilder created here instead of just folder names
  * [ ] Window utility with architecture layers and dependencies
  * [ ] Fake/Build empty classes on Builders folder
  *     [?] Comment to explain a basic way of use
  *         [ ] Reference to Kalendra.Commons.Tests.Builders stuff
+ * [ ] Create AssemblyInfo files alongside asmdefs
  */
 
 namespace Kalendra.Commons.Editor
@@ -88,17 +89,20 @@ namespace Kalendra.Commons.Editor
 
         static void CreateAsmdef(string asmdefName, string asmdefPath)
         {
-            asmdefName = asmdefName.IgnoreLayers("Runtime"); //TODO: to policy.
+            asmdefName = asmdefName.IgnoreLayers("Runtime"); //TODO: to Asmdef responsability.
             
-            var isEditorAssembly = asmdefName.Contains("Editor"); //TODO: to policy.
-            var isTestAssembly = asmdefName.Contains("Tests"); //TODO: to policy.
-            
-            var asmdefContent = Build
-                                .Asmdef()
-                                .WithName(asmdefName)
-                                .WithRootNamespaceSameThanName()
-                                .IsEditor(isEditorAssembly)
-                                .IsTests(isTestAssembly);
+            //TODO: to Asmdef responsability (self-detect when it's so).
+            var isEditorAssembly = asmdefName.Contains("Editor");
+            var isTestAssembly = asmdefName.Contains("Tests");
+            var isBuildersAssembly = asmdefName.Contains("Builders");
+
+            Asmdef asmdefContent = Build
+                .Asmdef()
+                .WithName(asmdefName)
+                .WithRootNamespaceSameThanName()
+                .IsEditor(isEditorAssembly)
+                .IsTests(isTestAssembly)
+                .IsBuilders(isBuildersAssembly);
             
             File.WriteAllText($"{asmdefPath}/{asmdefName}.asmdef", asmdefContent);
         }
