@@ -129,21 +129,35 @@ namespace Kalendra.Commons.Editor
             return asmdef;
         }
 
-        static void HandlePlatforms(Asmdef source, AsmdefDeserialization asmdef)
+        static void HandlePlatforms(Asmdef source, AsmdefDeserialization target)
         {
-            if(source.IsEditor)
-                asmdef.includePlatforms = new List<string> { "Editor" };
-            else if(!asmdef.includePlatforms.Any() && !asmdef.excludePlatforms.Any())
+            if(source.IsEditorOnly())
+                target.includePlatforms = new List<string> { "Editor" };
+            else if(!source.SpecifiesAnyPlatform())
             {
-                asmdef.includePlatforms = null;
-                asmdef.excludePlatforms = null;
+                target.includePlatforms = null;
+                target.excludePlatforms = null;
             }
         }
 
-        static void HandleReferences(Asmdef source, AsmdefDeserialization asmdef)
+        static void HandleReferences(Asmdef source, AsmdefDeserialization target)
         {
+            if(!source.IsTests)
+                return;
             
+            target.references.Add("UnityEngine.TestRunner");
+            target.references.Add("UnityEditor.TestRunner");
+            target.references.Add("BoundfoxStudios.FluentAssertions");
+            
+            target.precompiledReferences.Add("nunit.framework.dll");
         }
         #endregion
+    }
+
+    public static class AsmdefExtensions
+    {
+        public static bool IsEditorOnly(this Asmdef source) => source.IsBuilders || source.IsTests || source.IsEditor;
+
+        public static bool SpecifiesAnyPlatform(this Asmdef source) => source.IncludedPlatforms.Any() || source.ExcludedPlatforms.Any();
     }
 }

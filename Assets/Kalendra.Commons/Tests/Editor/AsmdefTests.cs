@@ -32,7 +32,19 @@ namespace Kalendra.Commons.Tests.Editor
         }
 
         [Test]
-        public void BuildersAsmdef_ThenIsSameThanTestsAsmdef()
+        public void TestsAsmdef_ThenIsSameThanEditorAsmdef()
+        {
+            var sut = Build.Asmdef().IsTests(true);
+
+            AsmdefDeserialization result = sut;
+            
+            AsmdefDeserialization expected = Build.Asmdef().IsEditor(true);
+            result.includePlatforms.Should().BeEquivalentTo(expected.includePlatforms);
+            result.excludePlatforms.Should().BeEquivalentTo(expected.excludePlatforms);
+        }
+        
+        [Test]
+        public void BuildersAsmdef_IncludesSamePlatformsThanTestsAsmdef()
         {
             var sut = Build.Asmdef().IsBuilders(true);
 
@@ -68,6 +80,66 @@ namespace Kalendra.Commons.Tests.Editor
 
             result.includePlatforms.Should().ContainSingle("Test");
             result.excludePlatforms.Should().BeEmpty();
+        }
+        #endregion
+        
+        #region References
+        [Test]
+        public void TestsAsmdef_IncludesTestingReferences()
+        {
+            var sut = Build.Asmdef().IsTests(true);
+
+            AsmdefDeserialization result = sut;
+
+            result.references.Should().Contain("UnityEngine.TestRunner");
+            result.references.Should().Contain("UnityEditor.TestRunner");
+            result.references.Should().Contain("BoundfoxStudios.FluentAssertions");
+        }
+        
+        [Test]
+        public void BuildersAsmdef_DoesNotIncludeTestingReferences()
+        {
+            var sut = Build.Asmdef().IsTests(false).IsBuilders(true);
+
+            AsmdefDeserialization result = sut;
+
+            result.references.Should().NotContain("UnityEngine.TestRunner");
+            result.references.Should().NotContain("UnityEditor.TestRunner");
+            result.references.Should().NotContain("BoundfoxStudios.FluentAssertions");
+        }
+
+        [Test]
+        public void DefiningAsmdefWithReferences_IncludesThoseReferences()
+        {
+            var sut = Build.Asmdef().WithReferences("Ref1", "Ref2");
+
+            AsmdefDeserialization result = sut;
+
+            result.references.Should().Contain("Ref1");
+            result.references.Should().Contain("Ref2");
+        }
+
+        [Test]
+        public void DefiningAsmdefWithReferences_IfAlsoIsTests_AlsoIncludesTestingReferences()
+        {
+            var sut = Build.Asmdef().WithReferences("Ref").IsTests(true);
+
+            AsmdefDeserialization result = sut;
+
+            result.references.Should().Contain("Ref");
+            result.references.Should().Contain("UnityEngine.TestRunner");
+            result.references.Should().Contain("UnityEditor.TestRunner");
+            result.references.Should().Contain("BoundfoxStudios.FluentAssertions");
+        }
+        
+        [Test]
+        public void TestsAsmdef_IncludesTestingPrecompiledReferences()
+        {
+            var sut = Build.Asmdef().IsTests(true);
+
+            AsmdefDeserialization result = sut;
+
+            result.precompiledReferences.Should().Contain("nunit.framework.dll");
         }
         #endregion
         
