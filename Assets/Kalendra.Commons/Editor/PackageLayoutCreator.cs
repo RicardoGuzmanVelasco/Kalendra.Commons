@@ -7,15 +7,16 @@ using UnityEngine;
 /* TO-DO LIST
  * ==========
  * [x] Asmdef class to split AsmdefDefinition and serialization structure
- *     [-] Then, AsmdefDefinition has responsibilities
+ *     [x] Then, AsmdefDefinition has responsibilities
  * [x] Serialization asmdef with Newtonsoft
- *     [ ] Dependencies in asmdef
- *     [ ] AsmdefBuilder created here instead of just folder names
+ *     [x] Dependencies in asmdef
+ *     [x] AsmdefBuilder created here instead of just folder names
+ * [ ] Different package policies: min-layered architecture, clean architecture...
  * [ ] Window utility with architecture layers and dependencies
  * [ ] Fake/Build empty classes on Builders folder
  *     [?] Comment to explain a basic way of use
  *         [ ] Reference to Kalendra.Commons.Tests.Builders stuff
- * [ ] Create AssemblyInfo files alongside asmdefs
+ * [-] Create AssemblyInfo files alongside asmdefs
  */
 
 namespace Kalendra.Commons.Editor

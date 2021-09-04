@@ -7,7 +7,6 @@ namespace Kalendra.Commons.Editor
     /// <summary>
     /// Does not represent an asmdef file — that's <see cref="AsmdefDeserialization"/>.
     /// Represents instead how someone wants a desired asmdef. It's also able to serialize it.
-    /// TODO: support for external change of precompiled references (dlls).
     /// </summary>
     public class Asmdef
     {
@@ -49,17 +48,11 @@ namespace Kalendra.Commons.Editor
             get => asmdefFileContent.references;
             set => asmdefFileContent.references = value;
         }
-
+        
         public bool AllowUnsafeCode
         {
             get => asmdefFileContent.allowUnsafeCode;
             set => asmdefFileContent.allowUnsafeCode = value;
-        }
-
-        public bool OverrideReferences
-        {
-            get => asmdefFileContent.overrideReferences;
-            set => asmdefFileContent.overrideReferences = value;
         }
 
         public List<string> PrecompiledReferences
@@ -92,15 +85,17 @@ namespace Kalendra.Commons.Editor
             set => asmdefFileContent.noEngineReferences = value;
         }
         #endregion
-
+        
+        public bool IsEditorOnly() => IsBuilders || IsTests || IsEditor;
+        
+        public bool SpecifiesAnyPlatform() => IncludedPlatforms.Any() || ExcludedPlatforms.Any();
+        
         #region Conversions
         public static implicit operator string(Asmdef source)
         {
             var asmdef = ToDeserializedAsmdef(source);
-            var jsonIgnoreNulls = new JsonSerializerSettings
-            {
-                NullValueHandling = NullValueHandling.Ignore
-            };
+            var jsonIgnoreNulls = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
+            
             return JsonConvert.SerializeObject(asmdef, Formatting.Indented, jsonIgnoreNulls);
         }
 
@@ -115,7 +110,6 @@ namespace Kalendra.Commons.Editor
                 excludePlatforms = source.ExcludedPlatforms,
                 references = source.References,
                 allowUnsafeCode = source.AllowUnsafeCode,
-                overrideReferences = source.OverrideReferences,
                 precompiledReferences = source.PrecompiledReferences,
                 autoReferenced = source.AutoReferenced,
                 defineConstraints = source.DefineConstraints,
@@ -125,6 +119,8 @@ namespace Kalendra.Commons.Editor
 
             HandlePlatforms(source, asmdef);
             HandleReferences(source, asmdef);
+            HandlePrecompiledReferences(source, asmdef);
+            HandleConstraints(source, asmdef);
 
             return asmdef;
         }
@@ -148,16 +144,26 @@ namespace Kalendra.Commons.Editor
             target.references.Add("UnityEngine.TestRunner");
             target.references.Add("UnityEditor.TestRunner");
             target.references.Add("BoundfoxStudios.FluentAssertions");
-            
-            target.precompiledReferences.Add("nunit.framework.dll");
+        }
+        
+        static void HandlePrecompiledReferences(Asmdef source, AsmdefDeserialization target)
+        {
+            if(source.IsTests)
+            {
+                target.precompiledReferences.Add("nunit.framework.dll");
+                target.precompiledReferences.Add("NSubstitute.dll");
+            }
+
+            target.overrideReferences = target.precompiledReferences.Any();
+        }
+
+        static void HandleConstraints(Asmdef source, AsmdefDeserialization target)
+        {
+            if(source.IsTests)
+                target.defineConstraints.Add("UNITY_INCLUDE_TESTS");
+
+            target.autoReferenced = !target.defineConstraints.Any();
         }
         #endregion
-    }
-
-    public static class AsmdefExtensions
-    {
-        public static bool IsEditorOnly(this Asmdef source) => source.IsBuilders || source.IsTests || source.IsEditor;
-
-        public static bool SpecifiesAnyPlatform(this Asmdef source) => source.IncludedPlatforms.Any() || source.ExcludedPlatforms.Any();
     }
 }

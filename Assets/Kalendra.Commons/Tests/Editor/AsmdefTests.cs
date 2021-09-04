@@ -1,4 +1,3 @@
-using System;
 using FluentAssertions;
 using Kalendra.Commons.Editor;
 using NUnit.Framework;
@@ -141,6 +140,80 @@ namespace Kalendra.Commons.Tests.Editor
 
             result.precompiledReferences.Should().Contain("nunit.framework.dll");
         }
+
+        [Test]
+        public void DefiningAsmdefWithPrecompiledReferences_AlsoEnablesOverrideReferencesFlag()
+        {
+            var sut = Build.Asmdef().WithPrecompiledReferences("Some");
+
+            AsmdefDeserialization result = sut;
+
+            result.overrideReferences.Should().BeTrue();
+        }
+
+        [Test]
+        public void DefiningAsmdef_DisablesOverrideReferencesFlag_ByDefault()
+        {
+            var sut = Build.Asmdef();
+
+            AsmdefDeserialization result = sut;
+
+            result.overrideReferences.Should().BeFalse();
+        }
+
+        [Test]
+        public void DefiningAsmdefWithPrecompiledReferences_IncludesThoseReferences()
+        {
+            var sut = Build.Asmdef().WithPrecompiledReferences("Ref1", "Ref2");
+
+            AsmdefDeserialization result = sut;
+
+            result.precompiledReferences.Should().Contain("Ref1");
+            result.precompiledReferences.Should().Contain("Ref2");
+        }
+
+        [Test]
+        public void DefiningAsmdefWithPrecompiledReferences_IfAlsoIsTests_AlsoIncludesTestingReferences()
+        {
+            var sut = Build.Asmdef().WithPrecompiledReferences("Ref").IsTests(true);
+
+            AsmdefDeserialization result = sut;
+
+            result.precompiledReferences.Should().Contain("nunit.framework.dll");
+            result.precompiledReferences.Should().Contain("NSubstitute.dll");
+        }
+        #endregion
+
+        #region Constraints
+        [Test]
+        public void TestsAsmdef_IncludesTestingDefineConstraint()
+        {
+            var sut = Build.Asmdef().IsTests(true);
+
+            AsmdefDeserialization result = sut;
+
+            result.defineConstraints.Should().Contain("UNITY_INCLUDE_TESTS");
+        }
+
+        [Test]
+        public void TestsAsmdef_DisablesAutoReferencedFlag()
+        {
+            var sut = Build.Asmdef().IsTests(true);
+
+            AsmdefDeserialization result = sut;
+
+            result.autoReferenced.Should().BeFalse();
+        }
+
+        [Test]
+        public void AutoReferencedFlag_IsEnabled_ByDefault()
+        {
+            var sut = Build.Asmdef();
+
+            AsmdefDeserialization result = sut;
+
+            result.autoReferenced.Should().BeTrue();
+        }
         #endregion
         
         #region Sanity
@@ -191,20 +264,17 @@ namespace Kalendra.Commons.Tests.Editor
         public void Serialization_SavesRemainingFlags()
         {
             var expectedUnsafeCode = JsonBuild.JsonPair<bool>().WithName("allowUnsafeCode").WithValue(true);
-            var expectedOverrideReferences = JsonBuild.JsonPair<bool>().WithName("overrideReferences").WithValue(false);
             var expectedAutoReferenced = JsonBuild.JsonPair<bool>().WithName("autoReferenced").WithValue(true);
             var expectedNoEngineReferences = JsonBuild.JsonPair<bool>().WithName("noEngineReferences").WithValue(false);
             var sut = Build
                 .Asmdef()
                 .WithUnsafeCode(expectedUnsafeCode.Value)
-                .WithOverrideReferences(expectedOverrideReferences.Value)
                 .WithAutoReferenced(expectedAutoReferenced.Value)
                 .WithEngineReferences(!expectedNoEngineReferences.Value);
 
             string jsonResult = sut;
 
             jsonResult.Should().Contain(expectedUnsafeCode);
-            jsonResult.Should().Contain(expectedOverrideReferences);
             jsonResult.Should().Contain(expectedAutoReferenced);
             jsonResult.Should().Contain(expectedNoEngineReferences);
         }

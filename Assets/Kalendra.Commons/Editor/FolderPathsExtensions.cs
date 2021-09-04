@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using UnityEditor;
 
@@ -6,8 +7,10 @@ namespace Kalendra.Commons.Editor
 {
     public static class FolderPathsExtensions
     {
-        public static string FilenameFromPath(this string path) => path.Split('/').Last();
-        public static string ConcatPath(this string path, string newPath) => $"{path}/{newPath}";
+        static readonly char Separator = Path.AltDirectorySeparatorChar;
+        
+        public static string FilenameFromPath(this string path) => path.Split(Separator).Last();
+        public static string ConcatPath(this string path, string newPath) => $"{path}{Separator}{newPath}";
         public static bool IsFolder(this string path) => AssetDatabase.IsValidFolder(path);
 
         public static bool HasFolder(this string path, string subfolderPath)
@@ -26,7 +29,7 @@ namespace Kalendra.Commons.Editor
             if(!parentPath.IsFolder())
                 throw new InvalidOperationException($"{parentPath} is not a valid folder.");
             
-            var newFolderPath = newFolderName.Split('/');
+            var newFolderPath = newFolderName.Split(Separator);
             newFolderName = newFolderPath.Last();
             var subFoldersNames = newFolderPath.Take(newFolderPath.Length - 1);
 

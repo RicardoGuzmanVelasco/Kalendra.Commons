@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Newtonsoft.Json;
 
 namespace Kalendra.Commons.Editor
 {
@@ -64,15 +63,15 @@ namespace Kalendra.Commons.Editor
             return this;
         }
 
+        public AsmdefBuilder WithPrecompiledReferences(params string[] dlls)
+        {
+            asmdef.PrecompiledReferences = dlls.ToList();
+            return this;
+        }
+        
         public AsmdefBuilder WithUnsafeCode(bool allowUnsafeCode)
         {
             asmdef.AllowUnsafeCode = allowUnsafeCode;
-            return this;
-        }
-
-        public AsmdefBuilder WithOverrideReferences(bool overrideReferences)
-        {
-            asmdef.OverrideReferences = overrideReferences;
             return this;
         }
 
@@ -116,14 +115,14 @@ namespace Kalendra.Commons.Editor
             // builder.AppendLine(Pair(nameof(asmdef.Name), asmdef.Name) + ",");
             // builder.AppendLine(Pair(nameof(asmdef.RootNamespace), asmdef.RootNamespace ?? asmdef.Name) + ",");
 
-            if(asmdef.IsTests && !asmdef.Name.Contains("Builders"))
-                asmdef.References.AddRange(new[]
-                {
-                    "UnityEngine.TestRunner",
-                    "UnityEditor.TestRunner",
-                    "BoundfoxStudios.FluentAssertions"
-                });
-            builder.AppendLine(PairArray(nameof(asmdef.References), asmdef.References) + ",");
+          // if(asmdef.IsTests && !asmdef.Name.Contains("Builders"))
+          //     asmdef.References.AddRange(new[]
+          //     {
+          //         "UnityEngine.TestRunner",
+          //         "UnityEditor.TestRunner",
+          //         "BoundfoxStudios.FluentAssertions"
+          //     });
+          // builder.AppendLine(PairArray(nameof(asmdef.References), asmdef.References) + ",");
 
             // if(asmdef.IsEditor || asmdef.IsTests)
             // {
@@ -133,11 +132,11 @@ namespace Kalendra.Commons.Editor
             
             // builder.AppendLine(Pair(nameof(asmdef.AllowUnsafeCode), asmdef.AllowUnsafeCode) + ",");
 
-            if(asmdef.IsTests && !asmdef.Name.Contains("Builders"))
-            {
-                asmdef.OverrideReferences = true;
-                asmdef.PrecompiledReferences.Add("nunit.framework.dll");
-            }
+            //if(asmdef.IsTests && !asmdef.Name.Contains("Builders"))
+            //{
+            //    asmdef.OverrideReferences = true;
+            //    asmdef.PrecompiledReferences.Add("nunit.framework.dll");
+            //}
 
             // builder.AppendLine(Pair(nameof(asmdef.OverrideReferences), asmdef.OverrideReferences) + ",");
             // builder.AppendLine(PairArray(nameof(asmdef.PrecompiledReferences), asmdef.PrecompiledReferences) + ",");
@@ -156,27 +155,6 @@ namespace Kalendra.Commons.Editor
             // builder.AppendLine("}");
 
             return builder.ToString();
-        }
-
-        static string Pair(string key, bool value) => $"\"{key}\": {value.ToString().ToLower()}";
-        static string Pair(string key, object value) => Pair(key, value.ToString());
-        static string Pair(string key, string value) => $"\"{key}\": \"{value}\"";
-
-        static string PairArray(string key, IEnumerable<string> values) => PairArray(key, values.ToArray());
-
-        static string PairArray(string key, params string[] values)
-        {
-            var valuesArray = "[";
-
-            foreach(var value in values)
-                valuesArray += "\"" + value + "\",";
-
-            if(valuesArray.Last() == ',')
-                valuesArray = valuesArray.Remove(valuesArray.Length - 1);
-
-            valuesArray += "]";
-
-            return $"\"{key}\": {valuesArray}";
         }
         #endregion
     }
