@@ -14,3 +14,4 @@ TO-DO LIST
      [ ] 
      [ ] InternalsVisibleTo by tests asmdefs
 [x] Create Documentation not-indexed folder
+[?] Switch "Tests.Editor" order in asmdef names.

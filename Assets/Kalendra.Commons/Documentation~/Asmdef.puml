@@ -1,0 +1,38 @@
+@startuml
+
+class Asmdef
+{
+    +IsEditor
+    +IsTests
+    +IsBuilders
+    
+    +"implicit string()"
+    +implicit AsmdefSerialization()
+}
+
+package Newtonsoft
+{
+    class JsonConvert <<static>>
+    {
+        +{static} SerializeObject() : string
+    }
+}
+
+class AsmdefSerialization
+
+class AsmdefBuilder <<Builder>>
+'''''''''''''''''''''''
+
+note as N1
+    Represents one
+    .asmdef file 
+end note
+N1 . AsmdefSerialization
+
+Asmdef *-- AsmdefSerialization
+
+"Asmdef::implicit string()" .> JsonConvert::SerializeObject
+
+AsmdefBuilder -> Asmdef
+
+@enduml
