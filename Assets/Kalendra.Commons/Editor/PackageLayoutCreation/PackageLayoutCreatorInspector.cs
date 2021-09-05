@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Kalendra.Commons.Editor
 {
-    public static class PackageLayoutCreator
+    public static class PackageLayoutCreatorInspector
     {
         #region Editor/Inspector
         const string OrganizationName = "Kalendra";
@@ -34,9 +34,7 @@ namespace Kalendra.Commons.Editor
         
         static void CleanPackageLayoutInFolder(string folderPath)
         {
-            if(Directory.Exists(folderPath))
-                Directory.Delete(folderPath, true);
-            Directory.CreateDirectory(folderPath);
+            DirectoryCleaner.Clean(folderPath);
 
             Debug.LogWarning($"Cleaned package layout from root {folderPath}");
             Recompile();
@@ -78,19 +76,12 @@ namespace Kalendra.Commons.Editor
         static void CreateAsmdef(string asmdefName, string asmdefPath)
         {
             asmdefName = asmdefName.IgnoreLayers("Runtime"); //TODO: to Asmdef responsability.
-            
-            //TODO: to Asmdef responsability (self-detect when it's so).
-            var isEditorAssembly = asmdefName.Contains("Editor");
-            var isTestAssembly = asmdefName.Contains("Tests");
-            var isBuildersAssembly = asmdefName.Contains("Builders");
 
             Asmdef asmdefContent = Build
                 .Asmdef()
                 .WithName(asmdefName)
                 .WithRootNamespaceSameThanName()
-                .IsEditor(isEditorAssembly)
-                .IsTests(isTestAssembly)
-                .IsBuilders(isBuildersAssembly);
+                .InferFromName();
             
             File.WriteAllText($"{asmdefPath}/{asmdefName}.asmdef", asmdefContent);
         }
@@ -102,7 +93,6 @@ namespace Kalendra.Commons.Editor
 
             while(path.Contains(".."))
                 path = path.Replace("..", ".");
-
             path = path.Trim('.');
             
             return path;

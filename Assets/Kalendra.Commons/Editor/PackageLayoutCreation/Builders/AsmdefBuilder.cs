@@ -95,6 +95,15 @@ namespace Kalendra.Commons.Editor
         }
 
         public static AsmdefBuilder New() => new AsmdefBuilder();
+
+        public AsmdefBuilder InferFromName()
+        {
+            IsEditor(asmdef.Name.Contains("Editor"));
+            IsTests(asmdef.Name.Contains("Tests"));
+            IsBuilders(asmdef.Name.Contains("Builders"));
+
+            return this;
+        }
         #endregion
 
         #region Builder implementation

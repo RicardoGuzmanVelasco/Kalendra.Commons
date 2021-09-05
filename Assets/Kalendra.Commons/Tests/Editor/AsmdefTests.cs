@@ -1,3 +1,4 @@
+using System;
 using FluentAssertions;
 using Kalendra.Commons.Editor;
 using NUnit.Framework;
@@ -216,6 +217,41 @@ namespace Kalendra.Commons.Tests.Editor
         }
         #endregion
         
+        #region Infer
+        [Test]
+        public void Infer_EditorAsmdef_IsSameThanEditorAsmdef()
+        {
+            AsmdefDeserialization expected = Build.Asmdef().WithName("...Editor...").IsEditor(true);
+            var sut = Build.Asmdef().WithName("...Editor...").InferFromName();
+
+            AsmdefDeserialization result = sut;
+            
+            result.Should().BeEquivalentTo(expected);
+        }
+        
+        [Test]
+        public void Infer_TestsAsmdef_IsSameThanTestsAsmdef()
+        {
+            AsmdefDeserialization expected = Build.Asmdef().WithName("...Tests...").IsTests(true);
+            var sut = Build.Asmdef().WithName("...Tests...").InferFromName();
+
+            AsmdefDeserialization result = sut;
+            
+            result.Should().BeEquivalentTo(expected);
+        }
+        
+        [Test]
+        public void Infer_BuildersAsmdef_IsSameThanBuildersAsmdef()
+        {
+            AsmdefDeserialization expected = Build.Asmdef().WithName("...Builders...").IsBuilders(true);
+            var sut = Build.Asmdef().WithName("...Builders...").InferFromName();
+
+            AsmdefDeserialization result = sut;
+            
+            result.Should().BeEquivalentTo(expected);
+        }
+        #endregion
+
         #region Sanity
         [Test]
         public void Serialization_SavesName()

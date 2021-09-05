@@ -3,13 +3,14 @@ skinparam componentStyle uml1
 'https://plantuml.com/component-diagram
 
 folder "Company.Package" {
+    folder "Company.Package/Editor"{
     [Company.Package.Editor]
     
-    folder "Company.Package.Runtime"{
+    folder "Company.Package/Runtime"{
         [Company.Package.Infrastructure] --> [Company.Package.Domain]
     }
     
-    folder "Company.Package.Tests"{
+    folder "Company.Package/Tests"{
             [Company.Package.Tests.Builders] --> [Company.Package.Domain]
             [Company.Package.Tests.Builders] ..> [Company.Package.Infrastructure]
             
