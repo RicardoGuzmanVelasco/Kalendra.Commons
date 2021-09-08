@@ -1,6 +1,6 @@
 using System.IO;
 
-namespace Kalendra.Commons.Editor
+namespace Kalendra.Commons.Editor.PackageLayoutCreation
 {
     public static class DirectoryCleaner
     {

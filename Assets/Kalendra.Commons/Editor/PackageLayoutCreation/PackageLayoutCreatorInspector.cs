@@ -1,20 +1,25 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
+using Kalendra.Commons.Editor.PackageLayoutCreation.Builders;
 using UnityEditor;
 using UnityEngine;
 
-namespace Kalendra.Commons.Editor
+namespace Kalendra.Commons.Editor.PackageLayoutCreation
 {
     public static class PackageLayoutCreatorInspector
     {
-        #region Editor/Inspector
-        const string OrganizationName = "Kalendra";
+        const string DefaultOrganizationName = "Kalendra";
+        const string DefaultVersion = "0.0.1";
+        const string DefaultCopyrightClaim = "(C) 2021 RGV";
         
-        const string HotkeyCreate = "%#&a";
-        const string HotkeyClean = "%#&q";
 
-        [MenuItem("Assets/Create/" + OrganizationName + "/Clean package Layout " + HotkeyClean)]
+        #region Editor/Inspector
+        const string HotkeyClean = "%#&q";
+        const string HotkeyCreate = "%#&a";
+
+        [MenuItem("Assets/Create/" + DefaultOrganizationName + "/Clean package Layout " + HotkeyClean)]
         public static void Clean()
         {
             var currentFolderPath = FindCurrentFolderFromProjectWindow();
@@ -22,7 +27,7 @@ namespace Kalendra.Commons.Editor
             CleanPackageLayoutInFolder(currentFolderPath);
         }
 
-        [MenuItem("Assets/Create/" + OrganizationName + "/Package Layout " + HotkeyCreate)]
+        [MenuItem("Assets/Create/" + DefaultOrganizationName + "/Package Layout " + HotkeyCreate)]
         public static void Create()
         {
             var currentFolderPath = FindCurrentFolderFromProjectWindow();
@@ -67,23 +72,24 @@ namespace Kalendra.Commons.Editor
         static void CreateFolderWithAssembly(this string path, string folder)
         {
             path.CreateSubfolder(folder);
-            var assemblyFolderPath = path.ConcatPath(folder);
+            var folderPath = path.ConcatPath(folder);
 
-            var assemblyName = $"{path.FilenameFromPath()}.{folder.Replace("/", ".")}";
-            CreateAsmdef(assemblyName, assemblyFolderPath);
+            var fileName = $"{path.FilenameFromPath()}.{folder.Replace("/", ".")}";
+            CreateAsmdef(fileName, folderPath);
+            CreateAssemblyInfoFile(fileName, folderPath);
         }
 
-        static void CreateAsmdef(string asmdefName, string asmdefPath)
+        static void CreateAsmdef(string name, string path)
         {
-            asmdefName = asmdefName.IgnoreLayers("Runtime"); //TODO: to Asmdef responsability.
+            name = name.IgnoreLayers("Runtime"); //TODO: to Asmdef responsability.
 
             Asmdef asmdefContent = Build
                 .Asmdef()
-                .WithName(asmdefName)
+                .WithName(name)
                 .WithRootNamespaceSameThanName()
                 .InferFromName();
             
-            File.WriteAllText($"{asmdefPath}/{asmdefName}.asmdef", asmdefContent);
+            File.WriteAllText($"{path}/{name}.asmdef", asmdefContent);
         }
 
         static string IgnoreLayers(this string path, params string[] layersToIgnore)
@@ -96,6 +102,26 @@ namespace Kalendra.Commons.Editor
             path = path.Trim('.');
             
             return path;
+        }
+
+        static void CreateAssemblyInfoFile(string name, string path)
+        {
+            var nameElements = name.Split('.');
+
+            var inferredCompany = nameElements.Length >= 3 ? nameElements[0] : null;
+            var inferredProduct = nameElements.Length >= 3 ? nameElements[1] : nameElements.First();
+
+            var companyAndProductLength = (inferredCompany + "." + inferredProduct + ".").Length;
+            var inferredTitle = name.Substring(companyAndProductLength);
+
+            AssemblyInfoFile content = Build.AssemblyInfo()
+                .WithCompany(inferredCompany)
+                .WithProduct(inferredProduct)
+                .WithTitle(inferredTitle)
+                .WithVersion(DefaultVersion)
+                .WithCopyright(DefaultCopyrightClaim);
+            
+            File.WriteAllText($"{path}/AssemblyInfo.cs", content);
         }
         #endregion
 

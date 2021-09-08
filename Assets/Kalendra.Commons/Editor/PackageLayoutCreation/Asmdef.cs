@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 
-namespace Kalendra.Commons.Editor
+namespace Kalendra.Commons.Editor.PackageLayoutCreation
 {
     /// <summary>
     /// Does not represent an asmdef file — that's <see cref="AsmdefDeserialization"/>.

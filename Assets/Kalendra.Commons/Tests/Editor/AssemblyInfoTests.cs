@@ -1,6 +1,6 @@
-using System;
 using FluentAssertions;
-using Kalendra.Commons.Editor;
+using Kalendra.Commons.Editor.PackageLayoutCreation;
+using Kalendra.Commons.Editor.PackageLayoutCreation.Builders;
 using NUnit.Framework;
 
 namespace Kalendra.Commons.Tests.Editor

@@ -2,8 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Kalendra.Commons.Editor.PackageLayoutCreation.Builders;
 
-namespace Kalendra.Commons.Editor
+namespace Kalendra.Commons.Editor.PackageLayoutCreation
 {
     public class PackageLayout
     {
@@ -31,10 +32,14 @@ namespace Kalendra.Commons.Editor
         public override string ToString()
         {
             var builder = new StringBuilder();
-
+            
             builder.Append(Name);
+            
             foreach(var indentedChild in Children.Select(l => IndentChild(l.ToString())))
                 builder.Append("\t" + indentedChild);
+
+            if(Assembly != null)
+                builder.Append($"\n\t{Assembly.Name}.asmdef");
             
             return builder.ToString();
         }
@@ -57,11 +62,11 @@ namespace Kalendra.Commons.Editor
 
                 rootLayout.AddChild(Documentation);
             
-                var testLayout = Folder("Tests");
-                rootLayout.AddChild(testLayout);
+                var testsLayout = Folder("Tests");
+                rootLayout.AddChild(testsLayout);
             
-                testLayout.AddChild(Folder("Runtime"));
-                testLayout.AddChild(Folder("Editor"));
+                testsLayout.AddChild(FolderWithAssembly("Runtime", Build.Asmdef().WithName("Runtime")));
+                testsLayout.AddChild(Folder("Editor"));
             
                 return rootLayout;
             }

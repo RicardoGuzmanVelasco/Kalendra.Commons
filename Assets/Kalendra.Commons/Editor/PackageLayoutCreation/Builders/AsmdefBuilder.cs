@@ -1,6 +1,6 @@
 using System.Linq;
 
-namespace Kalendra.Commons.Editor
+namespace Kalendra.Commons.Editor.PackageLayoutCreation.Builders
 {
     public class AsmdefBuilder
     {

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Kalendra.Commons.Editor
+namespace Kalendra.Commons.Editor.PackageLayoutCreation
 {
     public class AsmdefDeserialization
     {

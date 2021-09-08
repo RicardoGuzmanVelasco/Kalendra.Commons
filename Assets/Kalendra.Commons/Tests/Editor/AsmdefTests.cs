@@ -1,5 +1,6 @@
 using FluentAssertions;
-using Kalendra.Commons.Editor;
+using Kalendra.Commons.Editor.PackageLayoutCreation;
+using Kalendra.Commons.Editor.PackageLayoutCreation.Builders;
 using NUnit.Framework;
 
 using JsonBuild = Kalendra.Commons.Runtime.Domain.Builders.Build;

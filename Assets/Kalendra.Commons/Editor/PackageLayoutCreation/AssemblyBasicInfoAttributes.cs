@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace Kalendra.Commons.Tests.Editor
+namespace Kalendra.Commons.Editor.PackageLayoutCreation
 {
     internal struct AssemblyBasicInfoAttributes
     {
@@ -23,7 +23,7 @@ namespace Kalendra.Commons.Tests.Editor
             builder.Append(BuildAttribute("Copyright", source.copyright));
 
             return builder.ToString();
-            static string BuildAttribute(string key, string value) => value is null ? "" : $"[assembly: Assembly{key}(\"{value}\")]\n";
+            static string BuildAttribute(string key, string value) => value is null ? "" : $"[assembly: Assembly{key}(\"{value}\")]\r\n";
         }
     }
 }

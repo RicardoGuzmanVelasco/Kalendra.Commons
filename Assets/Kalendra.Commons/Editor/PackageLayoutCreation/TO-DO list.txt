@@ -1,18 +1,23 @@
 TO-DO LIST
 ==========
+[ ] Different package policies: min-layered architecture, clean architecture...
+[ ] Window utility with architecture layers and dependencies
+    [ ] Organization name from Unity player options.
+       [ ] Some other inferred stuff.
+[ ] Fake/Build empty classes on Builders folder
+    [?] Comment to explain a basic way of use
+        [ ] Reference to Kalendra.Commons.Tests.Builders stuff
+[x] Create AssemblyInfo files alongside asmdefs
+     [ ] InternalsVisibleTo by tests asmdefs
+[?] Switch "Tests.Editor" order in asmdef names.
+
+
+==========
+   OLD
+==========
 [x] Asmdef class to split AsmdefDefinition and serialization structure
     [x] Then, AsmdefDefinition has responsibilities
 [x] Serialization asmdef with Newtonsoft
     [x] Dependencies in asmdef
     [x] AsmdefBuilder created here instead of just folder names
-[ ] Different package policies: min-layered architecture, clean architecture...
-[ ] Window utility with architecture layers and dependencies
-[ ] Fake/Build empty classes on Builders folder
-    [?] Comment to explain a basic way of use
-        [ ] Reference to Kalendra.Commons.Tests.Builders stuff
-[-] Create AssemblyInfo files alongside asmdefs
-     [ ] 
-     [ ] InternalsVisibleTo by tests asmdefs
 [x] Create Documentation not-indexed folder
-[?] Switch "Tests.Editor" order in asmdef names.
-[ ] Organization name from Unity player options.

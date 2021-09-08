@@ -1,7 +1,6 @@
 using System.Collections.Generic;
-using Kalendra.Commons.Tests.Editor;
 
-namespace Kalendra.Commons.Editor
+namespace Kalendra.Commons.Editor.PackageLayoutCreation.Builders
 {
     public class AssemblyInfoBuilder
     {

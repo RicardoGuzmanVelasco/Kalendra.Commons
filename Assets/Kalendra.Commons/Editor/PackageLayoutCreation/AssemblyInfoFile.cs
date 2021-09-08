@@ -1,9 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Kalendra.Commons.Tests.Editor
+namespace Kalendra.Commons.Editor.PackageLayoutCreation
 {
     public class AssemblyInfoFile
     {
