@@ -6,27 +6,47 @@ using Kalendra.Commons.Editor.PackageLayoutCreation.Builders;
 
 namespace Kalendra.Commons.Editor.PackageLayoutCreation
 {
-    public class PackageLayout
+    public partial class PackageLayout
     {
-        #region FactoryMethods/ObjectMothers
-        public static PackageLayout Documentation => Folder("Documentation~");
-        
-        public static PackageLayout Folder(string name) => new PackageLayout { Name = name };
-        public static PackageLayout FolderWithAssembly(string name, Asmdef asmdef) => new PackageLayout { Name = name, Assembly = asmdef };
-        #endregion
-
         string Name { get; set; }
         public bool IgnoreAsChildrenNamePart { get; set; }
-        
+
+        string AssemblyNameFromPath
+        {
+            get
+            {
+                var name = ParentsPath.Aggregate("", (c, parent) => c + (parent + "."));
+                name += Name;
+
+                return name;
+            }
+        }
         Asmdef Assembly { get; set; }
 
         readonly List<PackageLayout> dependencies = new List<PackageLayout>();
         public IEnumerable<PackageLayout> Dependencies => dependencies;
         public void AddDependency(PackageLayout dependency) => dependencies.Add(dependency);
 
+        IEnumerable<PackageLayout> ParentsPath
+        {
+            get
+            {
+                var reversedParents = new List<PackageLayout>();
+
+                var currentParent = Parent;
+                while(currentParent != null)
+                {
+                    reversedParents.Add(Parent);
+                    currentParent = currentParent.Parent;
+                }
+
+                reversedParents.Reverse();
+                return reversedParents;
+            }
+        }
+        PackageLayout Parent { get; set; }
         readonly List<PackageLayout> children = new List<PackageLayout>();
         IEnumerable<PackageLayout> Children => children;
-        void AddChild(PackageLayout child) => children.Add(child);
 
         #region Formatting members
         public override string ToString()
@@ -52,25 +72,6 @@ namespace Kalendra.Commons.Editor.PackageLayoutCreation
             return indentedChild;
         }
         #endregion
-        
-        #region Nested members
-        public static class Templates
-        {
-            public static PackageLayout UnityPackageLayout(string rootName)
-            {
-                var rootLayout = Folder(rootName);
-
-                rootLayout.AddChild(Documentation);
-            
-                var testsLayout = Folder("Tests");
-                rootLayout.AddChild(testsLayout);
-            
-                testsLayout.AddChild(FolderWithAssembly("Runtime", Build.Asmdef().WithName("Runtime")));
-                testsLayout.AddChild(Folder("Editor"));
-            
-                return rootLayout;
-            }
-        }
-        #endregion
+       
     }
 }
