@@ -1,4 +1,3 @@
-using System;
 using FluentAssertions;
 using Kalendra.Commons.Editor;
 using NUnit.Framework;
@@ -53,11 +52,6 @@ namespace Kalendra.Commons.Tests.Editor
             AsmdefDeserialization expected = Build.Asmdef().IsTests(true);
             result.includePlatforms.Should().BeEquivalentTo(expected.includePlatforms);
             result.excludePlatforms.Should().BeEquivalentTo(expected.excludePlatforms);
-        }
-
-        [Test]
-        public void BuilderButNotTestsAsmdef_WhenToDeserialized_ThrowsException()
-        {
         }
 
         [Test]
@@ -252,7 +246,7 @@ namespace Kalendra.Commons.Tests.Editor
         }
         #endregion
 
-        #region Sanity
+        #region Serialization
         [Test]
         public void Serialization_SavesName()
         {

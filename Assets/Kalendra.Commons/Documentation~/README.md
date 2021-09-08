@@ -82,3 +82,7 @@ Expressed as an architecture with complete package names (where any discontinuou
 ![](Architecture.png)
 
 Any tests component aforementioned might know of package-level visibility members on its known components.
+
+To sum up,
+- **Editor tests mostly stands for unit testing**, despite it's also needed for Editor/Inspector testing or so,
+- while **Runtime (scene) tests meaning any other tests suite**, from integration to acceptance if needed.  
