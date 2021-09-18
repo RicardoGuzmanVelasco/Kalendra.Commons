@@ -1,6 +1,6 @@
 {
   "name": "com.kalendra.commons",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "displayName": "Kalendra.Commons",
   "description": "Basics utilities & architecture any Kalendra project may be made with.",
   "unity": "2019.1",

@@ -1,0 +1,27 @@
+@startuml
+skinparam componentStyle uml1
+'https://plantuml.com/component-diagram
+
+folder "Company.Package" {
+    folder "Company.Package/Editor"{
+    [Company.Package.Editor]
+    
+    folder "Company.Package/Runtime"{
+        [Company.Package.Infrastructure] --> [Company.Package.Domain]
+    }
+    
+    folder "Company.Package/Tests"{
+            [Company.Package.Tests.Builders] --> [Company.Package.Domain]
+            [Company.Package.Tests.Builders] ..> [Company.Package.Infrastructure]
+            
+            [Company.Package.Tests.Builders] <-- [Company.Package.Tests.Editor]
+            [Company.Package.Domain] <-- [Company.Package.Tests.Editor]
+            [Company.Package.Editor] <.u. [Company.Package.Tests.Editor]
+            [Company.Package.Infrastructure] <.. [Company.Package.Tests.Editor]
+            
+            [Company.Package.Tests] --> [Company.Package.Infrastructure]
+            [Company.Package.Tests] ..> [Company.Package.Tests.Builders]
+        }
+}
+
+@enduml
