@@ -35,9 +35,21 @@ namespace Kalendra.Maths
         }
         #endregion
 
-        public Interval Shift(int offset)
+        public Interval Shift(float offset)
         {
             return From(min + offset, max + offset);
         }
+        
+        #region Conversions
+        public static implicit operator (float min, float max)(Interval source)
+        {
+            return (source.min, source.max);
+        }
+
+        public static implicit operator Interval((float min, float max) source)
+        {
+            return From(source.min, source.max);
+        }
+        #endregion
     }
 }
