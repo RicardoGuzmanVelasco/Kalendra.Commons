@@ -36,6 +36,9 @@ namespace Kalendra.Commons.Runtime.Domain.Services
         #region GetRandom sugar syntax
         public T GetRandom<T>(ICollection<T> collection)
         {
+            if(!collection.Any())
+                return default;
+            
             var randomMemberIndex = Next(0, collection.Count);
             return collection.ElementAt(randomMemberIndex);
         }
@@ -47,6 +50,9 @@ namespace Kalendra.Commons.Runtime.Domain.Services
 
         public T GetRandom<T>(IList<T> list)
         {
+            if(!list.Any())
+                return default;
+            
             var randomMemberIndex = Next(0, list.Count);
             return list[randomMemberIndex];
         }
