@@ -6,6 +6,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 - Package layout complete creation.
+- Architecture assembly to be full or half deprecated in the future.
+
+## [0.1.0] - 2021-09-19
+
+Changes make API incompatible. May require assembly references changes. 
+
+### Added
+- RandomService provides different collection interfaces to dispatch to.
+
+### Changed
+- Services interfaces are no longer in Architecture assembly.
+  - They belongs to Domain from now on.
+  - Some implementations, as possible, belonging to domain as well.
 
 ## [0.0.3] - 2021-09-18
 ### Added

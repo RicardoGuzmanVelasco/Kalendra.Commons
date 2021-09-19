@@ -1,4 +1,5 @@
-﻿using Kalendra.Commons.Runtime.Architecture.Services;
+﻿using Kalendra.Commons.Runtime.Domain;
+using Kalendra.Commons.Runtime.Domain.Services;
 using UnityEngine;
 
 namespace Kalendra.Commons.Runtime.Infraestructure.Services
@@ -6,7 +7,7 @@ namespace Kalendra.Commons.Runtime.Infraestructure.Services
     /// <summary>
     /// Performance: 1000 requests : 0.1s, 100000 requests: 98s.
     /// </summary>
-    public sealed class UnityEngineRandomService : AbstractRandomService
+    public sealed class UnityEngineRandomService : TemplateRandomService
     {
         int timesRequested;
         int currentSeed;

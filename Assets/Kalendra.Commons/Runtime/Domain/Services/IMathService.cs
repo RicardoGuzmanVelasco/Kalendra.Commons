@@ -1,4 +1,4 @@
-﻿namespace Kalendra.Commons.Runtime.Architecture.Services
+﻿namespace Kalendra.Commons.Runtime.Domain.Services
 {
     public interface IMathService : IMathClampService, IMathTupleService { }
     

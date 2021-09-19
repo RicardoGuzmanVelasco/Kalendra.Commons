@@ -1,4 +1,4 @@
-﻿using Kalendra.Commons.Runtime.Architecture.Services;
+﻿using Kalendra.Commons.Runtime.Domain.Services;
 using UnityEngine;
 
 namespace Kalendra.Commons.Runtime.Infraestructure.Services

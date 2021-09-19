@@ -1,38 +1,18 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 
-namespace Kalendra.Commons.Runtime.Architecture.Services
+namespace Kalendra.Commons.Runtime.Domain.Services
 {
-    public interface IRandomService
-    {
-        int Seed { set; }
-
-        int Next(int min, int exclusiveMax);
-
-        float Next();
-        float Next(float min, float max);
-        
-        bool TossUp();
-        bool TossUp(float chanceToWin);
-        bool TossUpToBeat(float chanceToLose);
-        bool TossUpPercentage(float percentageChangeToWin);
-
-        int RollDie();
-        int RollDieOfFaces(int facesAmount);
-
-        T GetRandom<T>(IEnumerable<T> collection);
-    }
-    
     /// <summary>
     /// Base template method to autocomplete sugar syntax.
     /// </summary>
-    public abstract class AbstractRandomService : IRandomService
+    public abstract class TemplateRandomService : IRandomService
     {
         public abstract int Seed { set; }
         
         #region Constructors
-        protected AbstractRandomService() { }
-        protected AbstractRandomService(int seed) => Seed = seed;
+        protected TemplateRandomService() { }
+        protected TemplateRandomService(int seed) => Seed = seed;
         #endregion
 
         #region Random providing (hooks)
@@ -53,11 +33,23 @@ namespace Kalendra.Commons.Runtime.Architecture.Services
         public int RollDieOfFaces(int facesAmount) => Next(1, facesAmount + 1);
         #endregion
 
-        public T GetRandom<T>(IEnumerable<T> collection)
+        #region GetRandom sugar syntax
+        public T GetRandom<T>(ICollection<T> collection)
         {
-            var listedCollection = collection.ToList();
-            var randomMemberIndex = Next(0, listedCollection.Count);
-            return listedCollection[randomMemberIndex];
+            var randomMemberIndex = Next(0, collection.Count);
+            return collection.ElementAt(randomMemberIndex);
         }
+        
+        public T GetRandom<T>(IEnumerable<T> enumerable)
+        {
+            return GetRandom(enumerable.ToList());
+        }
+
+        public T GetRandom<T>(IList<T> list)
+        {
+            var randomMemberIndex = Next(0, list.Count);
+            return list[randomMemberIndex];
+        }
+        #endregion
     }
 }

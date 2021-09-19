@@ -1,9 +1,8 @@
 using System;
-using Kalendra.Commons.Runtime.Architecture.Services;
 
-namespace Kalendra.Commons.Runtime.Infraestructure.Services
+namespace Kalendra.Commons.Runtime.Domain.Services
 {
-    public sealed class SystemRandomService : AbstractRandomService
+    public sealed class SystemRandomService : TemplateRandomService
     {
         Random systemRandom = new Random();
 
